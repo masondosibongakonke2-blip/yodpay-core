@@ -1,0 +1,40 @@
+name: Gideon Core Protocol CI/CD Validation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-rust-core:
+    name: Rust Core (Cargo Verification)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Initialize Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Verify Code Formatting
+        run: cargo fmt --manifest-path rust/Cargo.toml -- --check
+
+      - name: Run Deterministic Unit Tests
+        run: cargo test --manifest-path rust/Cargo.toml --verbose
+
+  validate-cpp-core:
+    name: C++ Core (Compiler Verification)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Install Modern Build Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake
+
+      - name: Verify Header Compilation
+        run: |
+          g++ -std=c++17 -Wall -Wextra -fsyntax-only cpp/TelemetryParser.hpp
