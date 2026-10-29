@@ -1,0 +1,33 @@
+name: YODPAY Core Protocol Guardrails
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify-protocol:
+    name: Compile and Verify State Machine
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Initialize Toolchain Environment
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy, rustfmt
+
+    - name: Verify Strict Code Formatting
+      run: cargo fmt --all -- --check
+
+    - name: Execute Static Analysis (Clippy Warnings As Errors)
+      run: cargo clippy --workspace -- -D warnings
+
+    - name: Run Complete Protocol Test Matrix
+      run: cargo test --verbose
