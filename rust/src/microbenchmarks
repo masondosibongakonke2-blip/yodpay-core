@@ -1,0 +1,11 @@
+// Add this helper function to your YodPayNode implementation
+pub fn benchmark_local_validation(&self) -> u128 {
+    let start = std::time::Instant::now();
+    
+    // Simulate a hot-path verification loop (nonce lookups + balance constraints)
+    for _ in 0..10_000 {
+        let _check_nonce = self.spent_nonces.contains(&("alice".to_string(), 0));
+    }
+    
+    start.elapsed().as_micros()
+}
