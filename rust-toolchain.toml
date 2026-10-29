@@ -1,0 +1,5 @@
+# Enforces exact compiler versioning to ensure zero-variance compilation profiles
+[toolchain]
+channel = "1.81.0"
+components = ["rustfmt", "clippy"]
+targets = ["wasm32-unknown-unknown", "x86_64-unknown-linux-gnu"]
