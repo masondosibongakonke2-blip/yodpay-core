@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIDEON MESH // YODPAY Core Interface</title>
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        @import url('https://googleapis.com');
+        body { font-family: 'JetBrains Mono', monospace; background-color: #050505; color: #e5e7eb; }
+        .glow-green { box-shadow: 0 0 15px rgba(34, 197, 94, 0.15); }
+        .glow-amber { box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex flex-col justify-between">
+
+    <!-- TOP TELEMETRY BAR -->
+    <header class="border border-neutral-800 bg-neutral-950 p-4 rounded mb-6 flex flex-wrap justify-between items-center gap-4">
+        <div>
+            <h1 class="text-emerald-400 font-bold tracking-wider text-lg">GIDEON MESH // YODPAY-CORE</h1>
+            <p class="text-xs text-neutral-500">SYSTEM ARCHITECTURE: RUST + C++ // ISOLATION V2.4</p>
+        </div>
+        <div class="flex items-center gap-6 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                <span class="text-neutral-400">NETWORK STATE: <strong class="text-amber-500">PARTITIONED (OFFLINE)</strong></span>
+            </div>
+            <div class="border-l border-neutral-800 pl-6">
+                <span class="text-neutral-500">LOCAL QUORUM MODE:</span>
+                <select id="consensusMode" class="bg-neutral-900 border border-neutral-700 text-emerald-400 rounded px-2 py-0.5 ml-2 focus:outline-none" onchange="updateConsensusTier()">
+                    <option value="3f1">3f + 1 (Normal Layer)</option>
+                    <option value="2f1" selected>2f + 1 (Degraded Partition)</option>
+                    <option value="1f1">1f + 1 (Extreme Peer Isolation)</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CORE INTERFACE -->
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        
+        <!-- COLUMN 1: UNIVERSAL WALLET CONTROLLER -->
+        <section class="border border-neutral-800 bg-neutral-950 p-6 rounded glow-green">
+            <h2 class="text-sm font-bold text-neutral-400 border-b border-neutral-800 pb-2 mb-4 tracking-widest">I. SPREAD ENGINE & ENTERPRISE BRANCHES</h2>
+            
+            <div class="mb-4">
+                <label class="block text-xs text-neutral-500 mb-1">SELECT ENTERPRISE MASTER WALLET</label>
+                <select id="enterpriseBranch" class="w-full bg-neutral-900 border border-neutral-800 rounded p-2.5 text-sm focus:border-emerald-500 focus:outline-none" onchange="handleBranchChange()">
+                    <option value="Global Distribution Hub Alpha">Global Distribution Hub Alpha (Universal Core)</option>
+                    <option value="Regional Logistics Network West">Regional Logistics Network West (Zone 1)</option>
+                    <option value="Metropolitan Supply Chain Matrix">Metropolitan Supply Chain Matrix (Zone 2)</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                    <span class="block text-[10px] text-neutral-500">BASE VALUE (USD)</span>
+                    <span id="usdBalance" class="text-xl font-bold text-white">$14,250.00</span>
+                </div>
+                <div class="bg-neutral-900 border border-neutral-800 p-3 rounded">
+                    <span class="block text-[10px] text-neutral-500">LOCAL CONVERSION</span>
+                    <span id="localBalance" class="text-xl font-bold text-emerald-400">€13,395.00</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-neutral-500 mb-1">LOCALIZATION CURRENCY MATRIX</label>
+                    <select id="currencySelector" class="w-full bg-neutral-900 border border-neutral-800 rounded p-2.5 text-sm focus:border-emerald-500 focus:outline-none" onchange="convertCurrency()">
+                        <option value="EUR" data-symbol="Reference: EUR (€)" data-rate="0.94">Eurozone — EUR (€)</option>
+                        <option value="GBP" data-symbol="Reference: GBP (£)" data-rate="0.79">United Kingdom — GBP (£)</option>
+                        <option value="ZAR" data-symbol="Reference: ZAR (R)" data-rate="17.65">South Africa — ZAR (R)</option>
+                        <option value="JPY" data-symbol="Reference: JPY (¥)" data-rate="152.30">Japan — JPY (¥)</option>
+                        <option value="AUD" data-symbol="Reference: AUD ($)" data-rate="1.54">Australia — AUD ($)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-500 mb-1">OFFLINE SETTLEMENT CAPACITY TIER</label>
+                    <div id="tierBadge" class="bg-emerald-950/50 border border-emerald-800/80 text-emerald-400 px-3 py-2 rounded text-xs flex justify-between items-center">
+                        <span class="font-bold tracking-wider" id="tierLabel">TIER 3: ENTERPRISE RAIL</span>
+                        <span id="tierLimit">MAX: $10,000 / Tx</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUMN 2: OFFLINE TRANSACTION BUILDER -->
+        <section class="border border-neutral-800 bg-neutral-950 p-6 rounded glow-green">
+            <h2 class="text-sm font-bold text-neutral-400 border-b border-neutral-800 pb-2 mb-4 tracking-widest">II. TRANSACTION INCEPTION & DEPLOYMENT</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-neutral-500 mb-1">TARGET NODE PUBLIC KEY / ADDRESS</label>
+                    <input type="text" id="targetNode" value="0x71C...894a_node_alpha_mesh" class="w-full bg-neutral-900 border border-neutral-800 rounded p-2.5 text-xs text-neutral-300 font-mono focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-500 mb-1">SETTLE VALUE IN GLOBAL USD</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-neutral-500 text-sm">$</span>
+                        <input type="number" id="txAmount" value="450" class="w-full bg-neutral-900 border border-neutral-800 rounded p-2.5 pl-7 text-sm font-bold text-white focus:border-emerald-500 focus:outline-none" oninput="liveFilterCheck()">
+                    </div>
+                    <div class="text-[10px] text-neutral-500 mt-1 flex justify-between">
+                        <span>Dynamic Exchange Value:</span>
+                        <span id="liveExchangeCalc" class="text-emerald-400 font-bold">€423.00</span>
+                    </div>
+                </div>
+
+                <div class="bg-neutral-900/60 border border-neutral-800 p-3 rounded text-xs space-y-1 text-neutral-400">
+                    <div class="flex justify-between">
+                        <span>Protocol Utility Fee (0.1% Split):</span>
+                        <span id="protocolFee" class="font-mono text-neutral-300">$0.45</span>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-neutral-500">
+                        <span>└ Founder / Architect Treasury (50%):</span>
+                        <span id="feeSplit1">$0.225</span>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-neutral-500">
+                        <span>└ Host Sovereign Treasury (50%):</span>
+                        <span id="feeSplit2">$0.225</span>
+                    </div>
+                </div>
+
+                <button onclick="processOfflineTransaction()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-neutral-950 font-bold text-xs py-3 rounded tracking-widest transition-all cursor-pointer">
+                    SIGN & COMMIT TO LOCAL MESH
+                </button>
+            </div>
+        </section>
+
+        <!-- COLUMN 3: REAL-TIME EDGE AI FILTER & LOGS -->
+        <section class="border border-neutral-800 bg-neutral-950 p-6 rounded glow-amber flex flex-col justify-between h-full">
+            <div>
+                <div class="flex justify-between items-center border-b border-neutral-800 pb-2 mb-4">
+                    <h2 class="text-sm font-bold text-amber-500 tracking-widest">III. EDGE AI RISK FILTER</h2>
+                    <span class="bg-amber-950 text-amber-400 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-800 animate-pulse font-mono">SHIELD ACTIVE</span>
+                </div>
+
+                <!-- LIVE FILTER TELEMETRY BOX -->
+                <div id="filterMatrix" class="bg-neutral-900 border border-neutral-800 p-4 rounded mb-4 text-xs space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-neutral-400">EDGE RISK ASSESSMENT SCORE:</span>
+                        <span id="riskScore" class="font-mono font-bold text-emerald-400">0.02 / SAFE</span>
+                    </div>
+                    <div class="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="riskBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 2%"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-[10px] pt-1 border-t border-neutral-800/60">
+                        <div>
+                            <span class="text-neutral-500 block">VELOCITY RATE:</span>
