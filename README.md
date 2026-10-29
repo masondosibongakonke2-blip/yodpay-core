@@ -52,6 +52,21 @@ In many places the network or power regularly fails.
 
 YODPAY is built so devices can still confirm value transfer locally and safely, then reconcile when connectivity returns.
 
+
+```mermaid
+graph TD
+    A[Edge Node: Spend Initiated] -->|Check Nonce & Offline Limits| B(State: PendingOffline)
+    B -->|Broadcast to Local Peer Mesh| C{Evaluate Adaptive Quorum}
+    C -->|3f + 1 Density Passed| D[State: ConfirmedLocal]
+    C -->|2f + 1 Partition Passed| D
+    C -->|1f + 1 Isolated + Human Auth| D
+    D -->|Telemetry Window Reopens| E[Cryptographic Edge Buffer Queue]
+    E -->|TLS 1.3 Batch Push| F{Idempotent Execution Barrier}
+    F -->|Duplicate Found| G[Drop & Quarantined]
+    F -->|Unique Chain Verified| H[Root Global Ledger Settlement]
+    H -->|Clear Quota Signal Downstream| I[Sender Offline Pool Reset]
+```
+
 ---
 
 ## Founder
