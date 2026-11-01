@@ -1,0 +1,20 @@
+[package]
+name = "yodpay-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Sibongakonke Masondo"]
+description = "Offline-first payment core for Gideon Mesh – adaptive consensus, edge persistence, and human authority"
+license = "MIT"
+
+[dependencies]
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+rusqlite = { version = "0.31", features = ["bundled"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+[profile.release]
+opt-level = 3
+lto = true
